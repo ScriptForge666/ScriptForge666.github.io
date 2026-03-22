@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级CPS检测程序</title>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* 标题样式 */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        header p {
+            color: #b8c1ec;
+            font-size: 1.1rem;
+        }
+        
+        /* 主内容区 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-grid {
+                grid-template-columns: 300px 1fr;
+            }
+        }
+        
+        /* 统计面板 */
+        .stats-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .stat-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .stat-card .small-text {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+        
+        /* 颜色标识 */
+        .time-color {
+            color: #fbbf24;
+        }
+        
+        .left-clicks-color {
+            color: #3b82f6;
+        }
+        
+        .right-clicks-color {
+            color: #ef4444;
+        }
+        
+        .total-clicks-color {
+            color: #10b981;
+        }
+        
+        .cps-color {
+            color: #8b5cf6;
+        }
+        
+        .best-color {
+            color: #f59e0b;
+        }
+        
+        /* 主测试区域 */
+        .test-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 点击区域 */
+        .click-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #clickArea {
+            width: 100%;
+            max-width: 500px;
+            height: 250px;
+            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            user-select: none;
+            margin-bottom: 20px;
+        }
+        
+        #clickArea:hover {
+            transform: scale(1.02);
+        }
+        
+        #clickArea:active {
+            transform: scale(0.98);
+        }
+        
+        #clickMessage {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        #clickSubmessage {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+        }
+        
+        /* 控制区域 */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .time-setting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 8px 15px;
+        }
+        
+        .time-setting label {
+            color: #e2e8f0;
+        }
+        
+        #timeInput {
+            width: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 6px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        button.start-btn {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        button.start-btn:hover {
+            background: #059669;
+        }
+        
+        button.reset-btn {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        button.reset-btn:hover {
+            background: #dc2626;
+        }
+        
+        /* 图表区域 */
+        .charts-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .charts-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+        
+        canvas#cpsChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        /* 历史记录 */
+        .history-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .history-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #historyList {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-item:first-child {
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .history-info {
+            font-size: 0.9rem;
+        }
+        
+        .history-cps {
+            font-weight: bold;
+            color: #8b5cf6;
+        }
+        
+        .no-history {
+            color: #94a3b8;
+            text-align: center;
+            font-style: italic;
+            padding: 10px 0;
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        /* 动画 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes clickFeedback {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.97); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .click-feedback {
+            animation: clickFeedback 0.15s ease;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题区域 -->
+        <header>
+            <h1>高级CPS检测程序</h1>
+            <p>测试你的点击速度 (左键和右键分开统计，带实时曲线图)</p>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <div class="main-grid">
+            <!-- 左侧统计面板 -->
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <h2>⏱️ 测试时间</h2>
+                    <div class="value time-color" id="timer">0.00s</div>
+                    <div class="small-text">
+                        剩余: <span id="timeRemaining">0.00s</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2>🖱️ 左键点击</h2>
+                    <div class="value left-clicks-color" id="leftClickCount">0</div>
+                    <div class="small-text">
+                        左键 CPS: <span class="left-clicks-color" id="leftCps">0.00</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2>🖱️ 右键点击</h2>
+                    <div class="value right-clicks-color" id="rightClickCount">0</div>
+                    <div class="small-text">
+                        右键 CPS: <span class="right-clicks-color" id="rightCps">0.00</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2>📊 总点击次数</h2>
+                    <div class="value total-clicks-color" id="totalClickCount">0</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2>⚡ 当前总CPS</h2>
+                    <div class="value cps-color" id="currentCps">0.00</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2>🏆 最高左键CPS</h2>
+                    <div class="value best-color" id="bestLeftCps">0.00</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h2>🏆 最高右键CPS</h2>
+                    <div class="value best-color" id="bestRightCps">0.00</div>
+                </div>
+            </div>
+            
+            <!-- 右侧测试区域 -->
+            <div class="test-area">
+                <div class="click-container">
+                    <div id="clickArea">
+                        <div id="clickMessage">开始点击!</div>
+                        <div id="clickSubmessage">左键或右键均可，点击越快CPS越高</div>
+                    </div>
+                    
+                    <div class="controls">
+                        <div class="time-setting">
+                            <label for="timeInput">测试时间 (秒):</label>
+                            <input type="number" id="timeInput" min="1" max="60" value="5">
+                        </div>
+                        
+                        <button id="startStopButton" class="start-btn">
+                            <span>▶️</span> 开始
+                        </button>
+                        
+                        <button id="resetButton" class="reset-btn">
+                            <span>🔄</span> 重置
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 曲线图区域 -->
+                <div class="charts-section">
+                    <h2>📈 点击速度曲线图</h2>
+                    <div class="chart-container">
+                        <canvas id="cpsChart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #3b82f6;"></div>
+                            <span>左键 CPS</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ef4444;"></div>
+                            <span>右键 CPS</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #8b5cf6;"></div>
+                            <span>总 CPS</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 历史记录 -->
+                <div class="history-section">
+                    <h2>📜 历史记录</h2>
+                    <div id="historyList">
+                        <div class="no-history">暂无记录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 说明区域 -->
+        <footer>
+            <p>提示: CPS (点击每秒) 是衡量点击速度的指标 | 此工具可完全离线使用</p>
+        </footer>
+    </div>
+
+    <script>
+        // 简易Canvas图表绘制函数 - 不依赖任何外部库
+        class SimpleChart {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+                
+                // 图表数据
+                this.data = {
+                    leftCps: [],
+                    rightCps: [],
+                    totalCps: [],
+                    timeStamps: []
+                };
+                
+                // 配置
+                this.config = {
+                    maxDataPoints: 50,
+                    colors: {
+                        left: '#3b82f6',
+                        right: '#ef4444',
+                        total: '#8b5cf6',
+                        grid: 'rgba(255, 255, 255, 0.1)',
+                        text: 'rgba(255, 255, 255, 0.7)'
+                    },
+                    margins: {
+                        top: 30,
+                        right: 30,
+                        bottom: 40,
+                        left: 50
+                    },
+                    maxYValue: 20 // 初始最大Y值
+                };
+                
+                // 初始化画布尺寸
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            // 调整画布尺寸以适应容器
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+                this.draw(); // 重绘图表
+            }
+            
+            // 添加数据点
+            addData(leftCps, rightCps, totalCps, time) {
+                // 限制数据点数量
+                if (this.data.leftCps.length >= this.config.maxDataPoints) {
+                    this.data.leftCps.shift();
+                    this.data.rightCps.shift();
+                    this.data.totalCps.shift();
+                    this.data.timeStamps.shift();
+                }
+                
+                // 添加新数据
+                this.data.leftCps.push(leftCps);
+                this.data.rightCps.push(rightCps);
+                this.data.totalCps.push(totalCps);
+                this.data.timeStamps.push(time);
+                
+                // 动态调整Y轴最大值
+                const allValues = [...this.data.leftCps, ...this.data.rightCps, ...this.data.totalCps];
+                const maxValue = Math.max(...allValues);
+                if (maxValue > this.config.maxYValue) {
+                    this.config.maxYValue = Math.ceil(maxValue * 1.1);
+                }
+                
+                // 重绘图表
+                this.draw();
+            }
+            
+            // 清除所有数据
+            clearData() {
+                this.data = {
+                    leftCps: [],
+                    rightCps: [],
+                    totalCps: [],
+                    timeStamps: []
+                };
+                this.config.maxYValue = 20;
+                this.draw();
+            }
+            
+            // 绘制图表
+            draw() {
+                // 清除画布
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                
+                // 如果没有数据，绘制空图表
+                if (this.data.timeStamps.length === 0) {
+                    this.drawEmptyState();
+                    return;
+                }
+                
+                // 绘制网格
+                this.drawGrid();
+                
+                // 绘制轴线
+                this.drawAxes();
+                
+                // 绘制数据线条
+                this.drawLine(this.data.leftCps, this.config.colors.left);
+                this.drawLine(this.data.rightCps, this.config.colors.right);
+                this.drawLine(this.data.totalCps, this.config.colors.total);
+                
+                // 绘制数据点
+                this.drawPoints(this.data.leftCps, this.config.colors.left);
+                this.drawPoints(this.data.rightCps, this.config.colors.right);
+                this.drawPoints(this.data.totalCps, this.config.colors.total);
+                
+                // 绘制轴标签
+                this.drawAxisLabels();
+            }
+            
+            // 绘制空状态
+            drawEmptyState() {
+                this.drawGrid();
+                this.drawAxes();
+                this.drawAxisLabels();
+                
+                // 绘制提示文本
+                this.ctx.fillStyle = this.config.colors.text;
+                this.ctx.font = '14px sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText('开始测试以显示数据', this.width / 2, this.height / 2);
+            }
+            
+            // 绘制网格
+            drawGrid() {
+                const { left, right, top, bottom } = this.config.margins;
+                const plotWidth = this.width - left - right;
+                const plotHeight = this.height - top - bottom;
+                
+                // 水平网格线和标签
+                const yGridCount = 5;
+                this.ctx.strokeStyle = this.config.colors.grid;
+                this.ctx.lineWidth = 1;
+                
+                for (let i = 0; i <= yGridCount; i++) {
+                    const y = top + (plotHeight * (yGridCount - i) / yGridCount);
+                    
+                    // 绘制水平线
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(left, y);
+                    this.ctx.lineTo(this.width - right, y);
+                    this.ctx.stroke();
+                    
+                    // 绘制Y轴标签
+                    const value = (this.config.maxYValue * i / yGridCount).toFixed(0);
+                    this.ctx.fillStyle = this.config.colors.text;
+                    this.ctx.font = '11px sans-serif';
+                    this.ctx.textAlign = 'right';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(value, left - 5, y);
+                }
+                
+                // 垂直网格线
+                const xGridCount = 5;
+                for (let i = 0; i <= xGridCount; i++) {
+                    const x = left + (plotWidth * i / xGridCount);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, top);
+                    this.ctx.lineTo(x, this.height - bottom);
+                    this.ctx.stroke();
+                }
+            }
+            
+            // 绘制轴线
+            drawAxes() {
+                const { left, right, top, bottom } = this.config.margins;
+                const plotWidth = this.width - left - right;
+                const plotHeight = this.height - top - bottom;
+                
+                // X轴和Y轴
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                this.ctx.lineWidth = 2;
+                
+                // Y轴
+                this.ctx.beginPath();
+                this.ctx.moveTo(left, top);
+                this.ctx.lineTo(left, this.height - bottom);
+                this.ctx.stroke();
+                
+                // X轴
+                this.ctx.beginPath();
+                this.ctx.moveTo(left, this.height - bottom);
+                this.ctx.lineTo(this.width - right, this.height - bottom);
+                this.ctx.stroke();
+            }
+            
+            // 绘制轴标签
+            drawAxisLabels() {
+                // X轴标签
+                this.ctx.fillStyle = this.config.colors.text;
+                this.ctx.font = '12px sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'top';
+                this.ctx.fillText('时间 (秒)', this.width / 2, this.height - this.config.margins.bottom / 2);
+                
+                // Y轴标签
+                this.ctx.save();
+                this.ctx.translate(this.config.margins.left / 2, this.height / 2);
+                this.ctx.rotate(-Math.PI / 2);
+                this.ctx.fillText('点击/秒 (CPS)', 0, 0);
+                this.ctx.restore();
+            }
+            
+            // 绘制线条
+            drawLine(data, color) {
+                if (data.length < 2) return;
+                
+                const { left, right, top, bottom } = this.config.margins;
+                const plotWidth = this.width - left - right;
+                const plotHeight = this.height - top - bottom;
+                const pointCount = data.length;
+                
+                this.ctx.strokeStyle = color;
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                
+                // 绘制第一个点
+                const firstX = left + (0 / (pointCount - 1)) * plotWidth;
+                const firstY = top + plotHeight - (data[0] / this.config.maxYValue) * plotHeight;
+                this.ctx.moveTo(firstX, firstY);
+                
+                // 绘制后续点
+                for (let i = 1; i < pointCount; i++) {
+                    const x = left + (i / (pointCount - 1)) * plotWidth;
+                    const y = top + plotHeight - (data[i] / this.config.maxYValue) * plotHeight;
+                    this.ctx.lineTo(x, y);
+                }
+                
+                this.ctx.stroke();
+            }
+            
+            // 绘制数据点
+            drawPoints(data, color) {
+                const { left, right, top, bottom } = this.config.margins;
+                const plotWidth = this.width - left - right;
+                const plotHeight = this.height - top - bottom;
+                const pointCount = data.length;
+                
+                this.ctx.fillStyle = color;
+                
+                for (let i = 0; i < pointCount; i++) {
+                    const x = left + (i / (pointCount - 1)) * plotWidth;
+                    const y = top + plotHeight - (data[i] / this.config.maxYValue) * plotHeight;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+        }
+
+        // 初始化图表
+        const cpsChart = new SimpleChart('cpsChart');
+
+        // 获取DOM元素
+        const clickArea = document.getElementById('clickArea');
+        const leftClickCountElement = document.getElementById('leftClickCount');
+        const rightClickCountElement = document.getElementById('rightClickCount');
+        const totalClickCountElement = document.getElementById('totalClickCount');
+        const timerElement = document.getElementById('timer');
+        const timeRemainingElement = document.getElementById('timeRemaining');
+        const currentCpsElement = document.getElementById('currentCps');
+        const leftCpsElement = document.getElementById('leftCps');
+        const rightCpsElement = document.getElementById('rightCps');
+        const bestLeftCpsElement = document.getElementById('bestLeftCps');
+        const bestRightCpsElement = document.getElementById('bestRightCps');
+        const resetButton = document.getElementById('resetButton');
+        const startStopButton = document.getElementById('startStopButton');
+        const clickMessage = document.getElementById('clickMessage');
+        const clickSubmessage = document.getElementById('clickSubmessage');
+        const historyList = document.getElementById('historyList');
+        const timeInput = document.getElementById('timeInput');
+        
+        // 游戏状态变量
+        let leftClickCount = 0;
+        let rightClickCount = 0;
+        let totalClickCount = 0;
+        let startTime = null;
+        let elapsedTime = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let bestLeftCps = 0;
+        let bestRightCps = 0;
+        let leftClickTimestamps = [];  // 左键点击时间戳
+        let rightClickTimestamps = []; // 右键点击时间戳
+        let historyRecords = [];
+        let testDuration = 5; // 默认5秒
+        let timeRemaining = 0;
+        
+        // 更新显示的点击次数
+        function updateClickCounts() {
+            leftClickCountElement.textContent = leftClickCount;
+            rightClickCountElement.textContent = rightClickCount;
+            totalClickCount = leftClickCount + rightClickCount;
+            totalClickCountElement.textContent = totalClickCount;
+        }
+        
+        // 更新计时器显示
+        function updateTimer() {
+            const currentTime = Date.now();
+            elapsedTime = (currentTime - startTime) / 1000; // 转换为秒
+            timeRemaining = Math.max(0, testDuration - elapsedTime);
+            
+            timerElement.textContent = elapsedTime.toFixed(2) + 's';
+            timeRemainingElement.textContent = timeRemaining.toFixed(2) + 's';
+            
+            // 计算当前CPS
+            calculateCps();
+            
+            // 检查是否达到设定时间
+            if (timeRemaining <= 0) {
+                finishTest();
+            }
+        }
+        
+        // 计算CPS (每秒点击次数)
+        function calculateCps() {
+            if (elapsedTime <= 0) {
+                currentCpsElement.textContent = '0.00';
+                leftCpsElement.textContent = '0.00';
+                rightCpsElement.textContent = '0.00';
+                return;
+            }
+            
+            // 计算左键CPS
+            const leftCps = leftClickCount / elapsedTime;
+            leftCpsElement.textContent = leftCps.toFixed(2);
+            
+            // 计算右键CPS
+            const rightCps = rightClickCount / elapsedTime;
+            rightCpsElement.textContent = rightCps.toFixed(2);
+            
+            // 计算总CPS
+            const totalCps = totalClickCount / elapsedTime;
+            currentCpsElement.textContent = totalCps.toFixed(2);
+            
+            // 更新最佳记录
+            if (leftCps > bestLeftCps) {
+                bestLeftCps = leftCps;
+                bestLeftCpsElement.textContent = bestLeftCps.toFixed(2);
+            }
+            
+            if (rightCps > bestRightCps) {
+                bestRightCps = rightCps;
+                bestRightCpsElement.textContent = bestRightCps.toFixed(2);
+            }
+            
+            // 更新图表
+            cpsChart.addData(leftCps, rightCps, totalCps, elapsedTime);
+            
+            // 更新点击信息
+            updateClickMessage();
+        }
+        
+        // 更新点击信息
+        function updateClickMessage() {
+            if (totalClickCount > 0 && elapsedTime > 0) {
+                const totalCps = totalClickCount / elapsedTime;
+                clickMessage.textContent = `${totalCps.toFixed(1)} CPS!`;
+            }
+        }
+        
+        // 开始测试
+        function startTest() {
+            // 获取用户设置的时间
+            const inputTime = parseInt(timeInput.value);
+            if (inputTime >= 1 && inputTime <= 60) {
+                testDuration = inputTime;
+            } else {
+                // 如果输入无效，使用默认值
+                testDuration = 5;
+                timeInput.value = 5;
+            }
+            
+            // 初始化测试状态
+            leftClickCount = 0;
+            rightClickCount = 0;
+            totalClickCount = 0;
+            startTime = Date.now();
+            leftClickTimestamps = [];
+            rightClickTimestamps = [];
+            
+            // 清除图表数据
+            cpsChart.clearData();
+            
+            updateClickCounts();
+            timerInterval = setInterval(updateTimer, 100); // 每100ms更新一次
+            startStopButton.innerHTML = '<span>⏹️</span> 停止';
+            clickMessage.textContent = '快速点击!';
+            clickSubmessage.textContent = `测试将在 ${testDuration} 秒后结束`;
+            clickArea.classList.add('pulse');
+            
+            isRunning = true;
+        }
+        
+        // 停止测试
+        function stopTest() {
+            clearInterval(timerInterval);
+            startStopButton.innerHTML = '<span>▶️</span> 开始';
+            clickArea.classList.remove('pulse');
+            isRunning = false;
+            
+            // 保存记录
+            if (totalClickCount > 0 && elapsedTime > 0) {
+                const leftCps = leftClickCount / elapsedTime;
+                const rightCps = rightClickCount / elapsedTime;
+                const totalCps = totalClickCount / elapsedTime;
+                addToHistory(elapsedTime, leftClickCount, rightClickCount, totalClickCount, leftCps, rightCps, totalCps);
+            }
+        }
+        
+        // 完成测试（时间结束）
+        function finishTest() {
+            stopTest();
+            clickMessage.textContent = '测试结束!';
+            clickSubmessage.textContent = '点击开始按钮重新测试';
+        }
+        
+        // 切换测试状态（开始/停止）
+        function toggleTest() {
+            if (isRunning) {
+                stopTest();
+            } else {
+                startTest();
+            }
+        }
+        
+        // 重置测试
+        function resetTest() {
+            clearInterval(timerInterval);
+            leftClickCount = 0;
+            rightClickCount = 0;
+            totalClickCount = 0;
+            elapsedTime = 0;
+            timeRemaining = 0;
+            startTime = null;
+            isRunning = false;
+            leftClickTimestamps = [];
+            rightClickTimestamps = [];
+            
+            // 清除图表数据
+            cpsChart.clearData();
+            
+            updateClickCounts();
+            timerElement.textContent = '0.00s';
+            timeRemainingElement.textContent = '0.00s';
+            currentCpsElement.textContent = '0.00';
+            leftCpsElement.textContent = '0.00';
+            rightCpsElement.textContent = '0.00';
+            startStopButton.innerHTML = '<span>▶️</span> 开始';
+            clickMessage.textContent = '开始点击!';
+            clickSubmessage.textContent = '左键或右键均可，点击越快CPS越高';
+            clickArea.classList.remove('pulse');
+        }
+        
+        // 处理点击事件
+        function handleClick(event) {
+            // 阻止右键菜单弹出
+            event.preventDefault();
+            
+            if (isRunning) {
+                // 判断是左键还是右键点击
+                if (event.button === 0) {
+                    leftClickCount++;
+                    leftClickTimestamps.push(Date.now());
+                } else if (event.button === 2) {
+                    rightClickCount++;
+                    rightClickTimestamps.push(Date.now());
+                }
+                
+                // 添加点击反馈动画
+                clickArea.classList.add('click-feedback');
+                setTimeout(() => {
+                    clickArea.classList.remove('click-feedback');
+                }, 150);
+                
+                updateClickCounts();
+                updateClickMessage();
+            } else if (totalClickCount === 0) {
+                // 首次点击自动开始测试
+                startTest();
+                handleClick(event);
+            }
+        }
+        
+        // 添加记录到历史
+        function addToHistory(time, left, right, total, leftCps, rightCps, totalCps) {
+            const record = {
+                time: time.toFixed(2),
+                left: left,
+                right: right,
+                total: total,
+                leftCps: leftCps.toFixed(2),
+                rightCps: rightCps.toFixed(2),
+                totalCps: totalCps.toFixed(2),
+                date: new Date()
+            };
+            
+            historyRecords.unshift(record); // 添加到开头
+            if (historyRecords.length > 5) {
+                historyRecords.pop(); // 只保留最近5条记录
+            }
+            
+            updateHistoryDisplay();
+        }
+        
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            if (historyRecords.length === 0) {
+                historyList.innerHTML = '<div class="no-history">暂无记录</div>';
+                return;
+            }
+            
+            let html = '';
+            historyRecords.forEach((record, index) => {
+                html += `
+                    <div class="history-item">
+                        <div class="history-info">
+                            ${record.time}s | 左: ${record.left} (${record.leftCps} CPS) | 右: ${record.right} (${record.rightCps} CPS)
+                        </div>
+                        <div class="history-cps">总: ${record.totalCps} CPS</div>
+                    </div>
+                `;
+            });
+            
+            historyList.innerHTML = html;
+        }
+        
+        // 事件监听
+        clickArea.addEventListener('click', handleClick);
+        clickArea.addEventListener('contextmenu', handleClick); // 监听右键点击
+        resetButton.addEventListener('click', resetTest);
+        startStopButton.addEventListener('click', toggleTest);
+        
+        // 支持空格键点击（模拟左键）
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault(); // 防止页面滚动
+                // 空格键模拟左键点击
+                const event = new MouseEvent('click', {
+                    'button': 0,
+                    'bubbles': true
+                });
+                handleClick(event);
+            }
+        });
+        
+        // 初始化历史记录显示
+        updateHistoryDisplay();
+    </script>
+</body>
+</html>
+
