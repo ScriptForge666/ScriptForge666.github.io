@@ -5,68 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人介绍 | 我的个人主页</title>
     <link rel="icon" href="dependency/ScriptForge.png" type="image/png">
-    <!-- 引入Tailwind CSS（无需本地安装，CDN方式） -->
-    <script src="./js/tailwind.config.js"></script>
+    <!-- 引入Tailwind CSS（CDN） -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入图标库 -->
     <link href="./css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <!-- 自定义Tailwind配置 -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3b82f6', // 主色调：蓝色
-                        secondary: '#64748b', // 辅助色：浅灰蓝
-                        dark: '#1e293b', // 深色
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
     <style type="text/tailwindcss">
+        /* ==== iOS‑26 Acrylic / Apple Design Variables ==== */
+        :root {
+            --font-family: "Inter", system-ui, sans-serif;
+            --bg-primary: #007aff;            /* iOS 蓝 */
+            --bg-primary-hover: #0060df;     /* 按下深蓝 */
+            --bg-success: #34c759;            /* 绿 */
+            --bg-error: #ff3b30;              /* 红 */
+            --bg-page: #f2f2f7;               /* iOS 页面浅灰 */
+            --bg-card: rgba(255,255,255,0.8); /* Acrylic 半透明卡片 */
+            --border-color: rgba(0,0,0,0.07);
+            --border-input: rgba(0,0,0,0.12);
+            --spacing: 8px;
+            --radius: 12px;                  /* iOS 圆角 */
+            --radius-card: 12px;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --duration-medium: 300ms;
+            --acrylic-blur: blur(20px);
+            --acrylic-bg: rgba(255,255,255,0.6);
+        }
         @layer utilities {
-            .text-shadow {
-                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            .section-padding {
-                padding: clamp(2rem, 5vw, 4rem) 0;
-            }
+            .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .section-padding { padding: clamp(2rem,5vw,4rem) 0; }
             .card-hover {
-                transition: all 0.3s ease;
+                transition: transform var(--duration-medium) var(--ease-out),
+                            box-shadow var(--duration-medium) var(--ease-out);
             }
             .card-hover:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+                transform: translateY(-6px);
+                box-shadow: 0 12px 30px -6px rgba(0,0,0,0.12);
+            }
+            /* ==== iOS Acrylic 导航 ==== */
+            .ios-menu {
+                position: sticky;
+                top: 0;
+                left: 0;
+                right: 0;
+                backdrop-filter: var(--acrylic-blur);
+                background: var(--acrylic-bg);
+                padding: var(--spacing) var(--spacing);
+                z-index: 50;
+                border-bottom: 1px solid var(--border-color);
+                transition: background var(--duration-medium) var(--ease-out);
+            }
+            .ios-menu a {
+                color: #000;
+                font-weight: 500;
+                transition: color var(--duration-medium) var(--ease-out),
+                            transform 80ms ease-out;
+                margin-right: var(--spacing);
+            }
+            .ios-menu a:hover,.ios-menu a:focus { color: var(--bg-primary); }
+            .ios-menu a:active { transform: scale(0.96); }
+            @media (prefers-reduced-motion: reduce) {
+                * { transition-duration: 0ms !important; }
             }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-dark">
-    <!-- 导航栏 -->
-    <nav class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-primary">我的主页</a>
+<body class="bg-gray-50 text-dark" style="font-family: var(--font-family);">
+    <!-- 导航栏（iOS Acrylic） -->
+    <nav class="ios-menu">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold" style="color: var(--bg-primary);">我的主页</a>
             <div class="hidden md:flex space-x-8">
-                <a href="#about" class="text-secondary hover:text-primary transition-colors">关于我</a>
-                <a href="#skills" class="text-secondary hover:text-primary transition-colors">技能</a>
-                <a href="#projects" class="text-secondary hover:text-primary transition-colors">项目</a>
-                <a href="#contact" class="text-secondary hover:text-primary transition-colors">联系我</a>
+                <a href="#about">关于我</a>
+                <a href="#skills">技能</a>
+                <a href="#projects">项目</a>
+                <a href="#contact">联系我</a>
             </div>
             <!-- 移动端菜单按钮 -->
-            <button id="menuBtn" class="md:hidden text-dark text-xl">
+            <button id="menuBtn" class="md:hidden text-xl">
                 <i class="fa fa-bars"></i>
             </button>
         </div>
         <!-- 移动端菜单 -->
-        <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg absolute w-full">
-            <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
-                <a href="#about" class="text-secondary hover:text-primary transition-colors py-2">关于我</a>
-                <a href="#skills" class="text-secondary hover:text-primary transition-colors py-2">技能</a>
-                <a href="#projects" class="text-secondary hover:text-primary transition-colors py-2">项目</a>
-                <a href="#contact" class="text-secondary hover:text-primary transition-colors py-2">联系我</a>
+        <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg">
+            <div class="container mx-auto py-3 flex flex-col space-y-4">
+                <a href="#about" class="py-2">关于我</a>
+                <a href="#skills" class="py-2">技能</a>
+                <a href="#projects" class="py-2">项目</a>
+                <a href="#contact" class="py-2">联系我</a>
             </div>
         </div>
     </nav>
@@ -76,7 +100,7 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
             <div class="md:w-1/2 mb-8 md:mb-0">
                 <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow">
-                    你好，我是 <span class="text-primary">ScriptForge</span>
+                    你好，我是 <span style="color: var(--bg-primary);">ScriptForge</span>
                 </h1>
                 <p class="text-xl text-secondary mt-4 mb-8 max-w-lg">
                     一名热爱编程的开发者，专注于C++开发，喜欢探索新技术，乐于解决实际问题。
@@ -86,8 +110,8 @@
                 </a>
             </div>
             <div class="md:w-1/2 flex justify-center">
-                <div class="w-64 h-64 rounded-full bg-white shadow-xl overflow-hidden border-4 border-primary/20">
-                    <img src="dependency/ScriptForge.png" alt="个人头像" class="w-full h-full object-cover">
+                <div class="w-64 h-64 rounded-full bg-white shadow-xl overflow-hidden border-4" style="border-color: var(--bg-primary)/20;">
+                    <img src="ScriptForge.png" alt="个人头像" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -105,7 +129,6 @@
                     除了编程，我还喜欢阅读技术博客、参与开源项目，始终保持学习的热情，
                     希望通过技术创造有价值的产品。
                 </p>
-                <!-- 基本信息 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                     <div class="flex items-center">
                         <i class="fa fa-user text-primary text-xl w-8"></i>
@@ -129,15 +152,12 @@
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-12">我的技能</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                <!-- 技能卡片1 -->
-                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="bg-card rounded-xl p-6 card-hover" style="background: var(--bg-card);">
                     <div class="text-primary text-3xl mb-4"><i class="fa fa-code"></i></div>
                     <h3 class="text-xl font-semibold mb-2">C/C++</h3>
-                    <p class="text-secondary">了解C/C++编程语言，熟悉STL标准库，能简单程序。</p>
+                    <p class="text-secondary">了解C/C++编程语言，熟悉STL标准库，能写简单程序。</p>
                 </div>
-                <!-- 技能卡片2 -->
-                
-                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                <div class="bg-card rounded-xl p-6 card-hover" style="background: var(--bg-card);">
                     <div class="text-primary text-3xl mb-4"><i class="fa fa-server"></i></div>
                     <h3 class="text-xl font-semibold mb-2">服务器运维</h3>
                     <p class="text-secondary">了解Linux系统、Apache/Nginx配置、数据库管理等基础运维知识。</p>
@@ -151,13 +171,12 @@
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-12">项目展示</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <!-- 项目卡片1 -->
                 <div class="rounded-xl overflow-hidden shadow-md card-hover">
                     <img src="./dependency/StaticLibrary.png" alt="项目截图" class="w-full h-48 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2">C++静态库（持续更新）</h3>
                         <p class="text-secondary mb-4">使用C++开发的静态库，有树、反调试、日志记录等功能。</p>
-                        <a href="https://github.com/ScriptForge666/Scriptforge" target="_blank" rel="noopener noreferrer" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1"></i></a>
+                        <a href="https://github.com/ScriptForge666/Scriptforge" target="_blank" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1"></i></a>
                     </div>
                 </div>
                 <div class="rounded-xl overflow-hidden shadow-md card-hover">
@@ -165,15 +184,15 @@
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2">C++国际象棋（暂未完成）</h3>
                         <p class="text-secondary mb-4">使用C++开发的国际象棋程序。</p>
-                        <a href="https://github.com/ScriptForge666/Chess" target="_blank" rel="noopener noreferrer" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1"></i></a>
+                        <a href="https://github.com/ScriptForge666/Chess" target="_blank" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1"></i></a>
                     </div>
                 </div>
                 <div class="rounded-xl overflow-hidden shadow-md card-hover">
                     <img src="./dependency/HideWindow.png" alt="项目截图" class="w-full h-48 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2">C++&Qt&Win32API隐藏窗口（暂未完成）</h3>
-                        <p class="text-secondary mb-4">使用C++&Qt&Win32API隐藏窗口程序。</p>
-                        <a href="https://github.com/ScriptForge666/HideWindow" target="_blank" rel="noopener noreferrer" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1"></i></a>
+                        <p class="text-secondary mb-4">使用C++&Qt&Win32API的隐藏窗口程序。</p>
+                        <a href="https://github.com/ScriptForge666/HideWindow" target="_blank" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1"></i></a>
                     </div>
                 </div>
             </div>
@@ -183,17 +202,11 @@
     <!-- 联系我 -->
     <section id="contact" class="section-padding bg-primary/5">
         <div class="container mx-auto px-4">
-                <!-- 联系方式 -->
-                <div class="mt-8 pt-8 border-t border-gray-200">
-                    <h3 class="text-xl font-semibold mb-4">联系方式</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener noreferrer" class="flex items-center text-secondary hover:text-primary transition-colors">
-                            <i class="fa fa-github text-xl mr-2"></i> GitHub
-                        </a>
-                        <div class="flex items-center text-secondary hover:text-primary transition-colors">
-                            <i class="fa fa-qq text-xl mr-2"></i> QQ：3974142081
-                        </div>
-                    </div>
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <h3 class="text-xl font-semibold mb-4">联系方式</h3>
+                <div class="flex flex-wrap gap-4">
+                    <a href="https://github.com/ScriptForge666" target="_blank" class="flex items-center text-secondary hover:text-primary transition-colors"><i class="fa fa-github text-xl mr-2"></i> GitHub</a>
+                    <div class="flex items-center text-secondary"><i class="fa fa-qq text-xl mr-2"></i> QQ：3974142081</div>
                 </div>
             </div>
         </div>
@@ -201,10 +214,10 @@
 
     <!-- 页脚 -->
     <footer class="bg-dark text-white py-8">
-        <div class="container mx-auto px-4 text-center">
+        <div class="container mx-auto text-center">
             <p class="mb-4">© 2026 Scriptforge | 保留所有权利</p>
             <div class="flex justify-center space-x-6">
-                <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener noreferrer" class="text-white hover:text-primary transition-colors"><i class="fa fa-github text-xl"></i></a>
+                <a href="https://github.com/ScriptForge666" target="_blank" class="hover:text-primary"><i class="fa fa-github text-xl"></i></a>
                 <i class="fa fa-qq text-xl"></i>
             </div>
         </div>
@@ -212,12 +225,10 @@
 
     <!-- JavaScript -->
     <script>
-        // 移动端菜单切换
         const menuBtn = document.getElementById('menuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
         menuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
-            // 切换图标
             const icon = menuBtn.querySelector('i');
             if (icon.classList.contains('fa-bars')) {
                 icon.classList.replace('fa-bars', 'fa-times');
@@ -225,35 +236,19 @@
                 icon.classList.replace('fa-times', 'fa-bars');
             }
         });
-
         // 平滑滚动
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+            anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80, // 减去导航栏高度
-                        behavior: 'smooth'
-                    });
-                    // 关闭移动端菜单
+                    window.scrollTo({ top: targetElement.offsetTop - 70, behavior: 'smooth' });
                     mobileMenu.classList.add('hidden');
-                    menuBtn.querySelector('i').classList.replace('fa-times', 'fa-bars');
+                    const icon = menuBtn.querySelector('i');
+                    if (icon) icon.classList.replace('fa-times', 'fa-bars');
                 }
             });
-        });
-
-        // 导航栏滚动效果
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 50) {
-                nav.classList.add('shadow-md');
-                nav.classList.remove('shadow-sm');
-            } else {
-                nav.classList.remove('shadow-md');
-                nav.classList.add('shadow-sm');
-            }
         });
     </script>
 </body>
