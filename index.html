@@ -14,7 +14,8 @@
     <link rel="icon" href="./dependency/ScriptForge.png" type="image/png">
 
     <!-- 引入 Tailwind CSS CDN -->
-    <script src="./js/tailwind.js"></script>
+    <!-- <script src="./js/tailwind.js"></script> -->
+    <link rel="stylesheet" href="./css/tailwind.min.css">
 
     <!-- 引入 Font-Awesome 图标库 -->
     <link href="./css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
@@ -25,25 +26,59 @@
 
     <style>
         /* 针对页面局部细节与动画增强的扩展样式 */
-        .hero-section {
-            background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(0, 122, 255, 0.02) 100%);
-        }
+        .hero-section > div {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 2rem !important;
+    }
 
-        /* 深度贴合 ScriptForge 的卡片微调 */
-        .project-card-img {
-            border-top-left-radius: calc(var(--radius-card) - 1px);
-            border-top-right-radius: calc(var(--radius-card) - 1px);
+    @media (min-width: 768px) {
+        .hero-section > div {
+            flex-direction: row !important;
         }
+        .hero-section > div > div:first-child {
+            width: 60% !important;
+        }
+        .hero-section > div > div:last-child {
+            width: 35% !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+        }
+    }
 
-        .sf-header-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    .hero-section {
+        background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(0, 122, 255, 0.02) 100%);
+    }
+    
+    .project-card-img {
+        border-top-left-radius: calc(var(--radius-card) - 1px);
+        border-top-right-radius: calc(var(--radius-card) - 1px);
+    }
+
+    .sf-header-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
         
+
+@media (min-width: 768px) {
+    .hero-section > div {
+        flex-direction: row !important; /* 👈 大屏设备恢复左右横向排列 */
+    }
+    .hero-section > div > div:first-child {
+        width: 60% !important;
+    }
+    .hero-section > div > div:last-child {
+        width: 35% !important;
+        justify-content: flex-end !important;
+    }
+}
     </style>
 </head>
 <body>

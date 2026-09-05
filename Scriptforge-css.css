@@ -304,55 +304,55 @@ body {
  标题层级
 */
 h1 {
-  font-size: clamp(1.75rem, 4vw, 2.25rem); /* 28px ~ 36px */
-  font-weight: 800;
-  margin: 24px 0 16px;
-  color: var(--h1-3-color);
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.75rem, 4vw, 2.25rem) !important; /* 28px ~ 36px */
+  font-weight: 800 !important;
+  margin: 24px 0 16px !important;
+  color: var(--h1-3-color) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em !important;
 }
 
 h2 {
-  font-size: clamp(1.35rem, 2.5vw, 1.65rem); /* 21.6px ~ 26.4px */
-  font-weight: 700;
-  margin: 24px 0 12px;
-  color: var(--h1-3-color);
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.35rem, 2.5vw, 1.65rem) !important; /* 21.6px ~ 26.4px */
+  font-weight: 700 !important;
+  margin: 24px 0 12px !important;
+  color: var(--h1-3-color) !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.01em !important;
 }
 
 h3 {
-  font-size: 1.15rem; /* 18.4px */
-  font-weight: 600;
-  margin: 18px 0 10px;
-  color: var(--h1-3-color);
-  line-height: 1.35;
+  font-size: 1.15rem !important; /* 18.4px */
+  font-weight: 600 !important;
+  margin: 18px 0 10px !important;
+  color: var(--h1-3-color) !important;
+  line-height: 1.35 !important;
 }
 
 h4 {
-  font-size: 1rem; /* 16px */
-  font-weight: 600;
-  margin: 14px 0 8px;
-  color: var(--body-color);
-  line-height: 1.4;
+  font-size: 1rem !important; /* 16px */
+  font-weight: 600 !important;
+  margin: 14px 0 8px !important;
+  color: var(--body-color) !important;
+  line-height: 1.4 !important;
 }
 
 h5 {
-  font-size: 0.875rem; /* 14px */
-  font-weight: 600;
-  margin: 12px 0 6px;
-  color: var(--h4-6-color);
-  line-height: 1.4;
+  font-size: 0.875rem !important; /* 14px */
+  font-weight: 600 !important;
+  margin: 12px 0 6px !important;
+  color: var(--h4-6-color) !important;
+  line-height: 1.4 !important;
 }
 
 h6 {
-  font-size: 0.75rem; /* 12px */
-  font-weight: 600;
-  margin: 12px 0 6px;
-  color: var(--h4-6-color);
-  line-height: 1.4;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.75rem !important; /* 12px */
+  font-weight: 600 !important;
+  margin: 12px 0 6px !important;
+  color: var(--h4-6-color) !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
 }
 
 /*
