@@ -5,334 +5,284 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人介绍 | 我的个人主页</title>
     <meta name="description" content="ScriptForge 的个人主页 - C/C++ 开发者，展示项目、技能与联系方式。">
+
     <!-- Open Graph -->
     <meta property="og:title" content="ScriptForge 的个人主页">
     <meta property="og:description" content="C/C++ 开发者，展示项目、技能与联系方式。">
     <meta property="og:type" content="website">
     <meta property="og:image" content="./dependency/ScriptForge.png">
     <link rel="icon" href="./dependency/ScriptForge.png" type="image/png">
-    <!-- 引入Tailwind CSS（CDN 或 本地构建） -->
+
+    <!-- 引入 Tailwind CSS CDN -->
     <script src="./js/tailwind.js"></script>
-    <!-- 引入图标库 -->
+
+    <!-- 引入 Font-Awesome 图标库 -->
     <link href="./css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/tailwindcss">
-        /* ==== iOS‑26 Acrylic / Apple Design Variables ==== */
-        :root {
-            --font-family: "Inter", system-ui, sans-serif;
-            --bg-primary: #007aff; /* iOS 蓝 */
-            --bg-primary-rgb: 0,122,255; /* 对应的 RGB，用于 rgba(...) */
-            --bg-primary-hover: #0060df; /* 按下深蓝 */
-            --bg-success: #34c759; /* 绿 */
-            --bg-error: #ff3b30; /* 红 */
-            --bg-page: #f2f2f7; /* iOS 页面浅灰 */
-            --bg-card: rgba(255,255,255,0.8); /* Acrylic 半透明卡片 */
-            --border-color: rgba(0,0,0,0.07);
-            --border-input: rgba(0,0,0,0.12);
-            --spacing: 8px;
-            --radius: 12px; /* iOS 圆角 */
-            --radius-card: 12px;
-            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-            --duration-medium: 300ms;
-            --acrylic-blur: blur(20px);
-            --acrylic-bg: rgba(255,255,255,0.6);
+
+    <!-- 引入 ScriptForge 核心 CSS & JS 库 -->
+    <link rel="stylesheet" href="Scriptforge-css.css">
+    <script src="Scriptforge-js.js" defer></script>
+
+    <style>
+        /* 针对页面局部细节与动画增强的扩展样式 */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(0, 122, 255, 0.02) 100%);
         }
 
-        @layer utilities {
-            .text-shadow {
-                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-
-            .section-padding {
-                padding: clamp(2rem,5vw,4rem) 0;
-            }
-
-            .card-hover {
-                transition: transform var(--duration-medium) var(--ease-out), box-shadow var(--duration-medium) var(--ease-out);
-            }
-
-                .card-hover:hover {
-                    transform: translateY(-6px);
-                    box-shadow: 0 12px 30px -6px rgba(0,0,0,0.12);
-                }
-            /* ==== iOS Acrylic 导航 ==== */
-            .ios-menu {
-                position: sticky;
-                top: 0;
-                left: 0;
-                right: 0;
-                backdrop-filter: var(--acrylic-blur);
-                background: var(--acrylic-bg);
-                padding: var(--spacing) var(--spacing);
-                z-index: 50;
-                border-bottom: 1px solid var(--border-color);
-                transition: background var(--duration-medium) var(--ease-out);
-            }
-
-                .ios-menu a {
-                    color: #000;
-                    font-weight: 500;
-                    transition: color var(--duration-medium) var(--ease-out), transform 80ms ease-out;
-                    margin-right: var(--spacing);
-                }
-
-                    .ios-menu a:hover, .ios-menu a:focus {
-                        color: var(--bg-primary);
-                    }
-
-                    .ios-menu a:active {
-                        transform: scale(0.96);
-                    }
-
-            @media (prefers-reduced-motion: reduce) {
-                * {
-                    transition-duration: 0ms !important;
-                }
-            }
-
-            /* 简单颜色回退（当 Tailwind 未扩展这些实用类时）*/
-            .bg-primary {
-                background-color: var(--bg-primary) !important;
-            }
-
-            .text-primary {
-                color: var(--bg-primary) !important;
-            }
-
-            .text-secondary {
-                color: rgba(0,0,0,0.6) !important;
-            }
-
-            .bg-dark {
-                background-color: #111827 !important;
-                color: #fff !important;
-            }
+        /* 深度贴合 ScriptForge 的卡片微调 */
+        .project-card-img {
+            border-top-left-radius: calc(var(--radius-card) - 1px);
+            border-top-right-radius: calc(var(--radius-card) - 1px);
         }
+
+        .sf-header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
     </style>
 </head>
-<body class="bg-gray-50 text-dark" style="font-family: var(--font-family);">
-    <!-- 导航栏（iOS Acrylic） -->
-    <nav class="ios-menu">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold" style="color: var(--bg-primary);">我的主页</a>
-            <div class="hidden md:flex space-x-8">
-                <a href="#about">关于我</a>
-                <a href="#skills">技能</a>
-                <a href="#projects">项目</a>
-                <a href="#contact">联系我</a>
-            </div>
-            <!-- 移动端菜单按钮 -->
-            <button id="menuBtn" type="button" class="md:hidden text-xl" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileMenu">
-                <i class="fa fa-bars" aria-hidden="true"></i>
-            </button>
-        </div>
-        <!-- 移动端菜单 -->
-        <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg" role="menu" aria-hidden="true">
-            <div class="container mx-auto py-3 flex flex-col space-y-4">
-                <a href="#about" class="py-2" role="menuitem">关于我</a>
-                <a href="#skills" class="py-2" role="menuitem">技能</a>
-                <a href="#projects" class="py-2" role="menuitem">项目</a>
-                <a href="#contact" class="py-2" role="menuitem">联系我</a>
-            </div>
-        </div>
-    </nav>
+<body>
 
-    <!-- 英雄区 -->
-    <header class="pt-28 pb-20 bg-gradient-to-br from-primary/5 to-primary/10">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
-            <div class="md:w-1/2 mb-8 md:mb-0">
-                <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow">
-                    你好，我是 <span style="color: var(--bg-primary);">ScriptForge</span>
-                </h1>
-                <p class="text-xl text-secondary mt-4 mb-8 max-w-lg">
-                    一名热爱编程的开发者，专注于C++开发，喜欢探索新技术，乐于解决实际问题。
+    <!-- Toast 消息组件 -->
+    <sf-toast id="app-toast"></sf-toast>
+
+    <!-- ScriptForge 自定义 WebComponent 导航菜单 -->
+    <sf-menu class="menu-top">
+        <div class="sf-header-nav px-2">
+            <a href="#" class="text-xl font-bold tracking-tight" style="color: var(--bg-primary);">
+                <i class="fa fa-code mr-1"></i> ScriptForge
+            </a>
+            <div class="flex items-center gap-3">
+        <li><a href="#about" class="menu-link"><span class="label">关于我</span></a></li>
+        <li><a href="#skills" class="menu-link"><span class="label">技能</span></a></li>
+        <li><a href="#projects" class="menu-link"><span class="label">项目</span></a></li>
+        <li><a href="#contact" class="menu-link"><span class="label">联系</span></a></li>
+        <!-- 暗黑/亮色 主题切换按钮 -->
+        <button id="toggle-theme" class="toggle-btn ml-2" aria-label="切换主题"></button>
+        </div>
+        </div>
+    </sf-menu>
+
+    <main class="page-wrapper">
+        <!-- 英雄区 (Hero Section) -->
+        <header class="py-16 md:py-24 hero-section my-4 rounded-2xl px-6 border border-black/5 dark:border-white/10">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="md:w-3/5 space-y-4">
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                        👋 Welcome to my homepage
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
+                        你好，我是 <span style="color: var(--bg-primary);">ScriptForge</span>
+                    </h1>
+                    <p class="text-lg opacity-80 max-w-xl leading-relaxed">
+                        一名热爱编程的开发者，专注于 C/C++ 开发，喜欢探索底层的奥秘与新技术，乐于解决实际问题。
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <a href="#contact" class="btn">
+                            联系我 <i class="fa fa-arrow-right ml-1"></i>
+                        </a>
+                        <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener" class="btn btn-secondary">
+                            <i class="fa fa-github text-lg"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-2/5 flex justify-center">
+                    <div class="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 shadow-xl" style="border-color: var(--bg-primary);">
+                        <img src="./dependency/ScriptForge.png" alt="ScriptForge 头像" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 关于我 -->
+        <section id="about" class="py-12">
+            <h2>关于我</h2>
+            <div class="card p-6 md:p-8">
+                <p class="text-base leading-relaxed mb-4">
+                    一位普普通通的中学生，略懂 C/C++ 技术与系统级开发。
                 </p>
-                <a href="#contact" class="inline-block bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
-                    联系我 <i class="fa fa-arrow-right ml-2"></i>
-                </a>
-            </div>
-            <div class="md:w-1/2 flex justify-center">
-                <div class="w-64 h-64 rounded-full bg-white shadow-xl overflow-hidden border-4" style="border-color: rgba(var(--bg-primary-rgb),0.2);">
-                    <img src="./dependency/ScriptForge.png" alt="个人头像" class="w-full h-full object-cover" loading="lazy">
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- 关于我 -->
-    <section id="about" class="section-padding bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">关于我</h2>
-            <div class="max-w-3xl mx-auto">
-                <p class="text-lg text-secondary mb-6 leading-relaxed">
-                    一位普普通通的中学生，略懂C/C++技术
+                <p class="text-base leading-relaxed mb-6 opacity-80">
+                    除了编程，我还喜欢阅读技术博客、探索反调试机制与底层架构、参与开源项目。始终保持对技术的好奇心与热情，希望通过代码创造有价值的产品。
                 </p>
-                <p class="text-lg text-secondary mb-6 leading-relaxed">
-                    除了编程，我还喜欢阅读技术博客、参与开源项目，始终保持学习的热情，
-                    希望通过技术创造有价值的产品。
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                    <div class="flex items-center">
-                        <i class="fa fa-user text-primary text-xl w-8" aria-hidden="true"></i>
-                        <span class="ml-3"><strong>姓名：</strong> ScriptForge</span>
+                <hr class="my-6 border-black/10 dark:border-white/10">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="flex items-center gap-3">
+                        <i class="fa fa-user text-xl" style="color: var(--bg-primary);"></i>
+                        <div>
+                            <div class="text-xs opacity-60">姓名</div>
+                            <div class="font-medium">ScriptForge</div>
+                        </div>
                     </div>
-                    <div class="flex items-center">
-                        <i class="fa fa-envelope text-primary text-xl w-8" aria-hidden="true"></i>
-                        <span class="ml-3"><strong>邮箱：</strong> scriptforge@outlook.com</span>
+                    <div class="flex items-center gap-3 cursor-pointer" id="copy-email" title="点击复制邮箱">
+                        <i class="fa fa-envelope text-xl" style="color: var(--bg-primary);"></i>
+                        <div>
+                            <div class="text-xs opacity-60">邮箱 (点击复制)</div>
+                            <div class="font-medium text-sm sm:text-base">scriptforge@outlook.com</div>
+                        </div>
                     </div>
-                    <div class="flex items-center">
-                        <i class="fa fa-map-marker text-primary text-xl w-8" aria-hidden="true"></i>
-                        <span class="ml-3"><strong>城市：</strong> 苏州市</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 技能 -->
-    <section id="skills" class="section-padding bg-gray-50">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">我的技能</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-                <div class="bg-card rounded-xl p-6 card-hover" style="background: var(--bg-card);">
-                    <div class="text-primary text-3xl mb-4"><i class="fa fa-code" aria-hidden="true"></i></div>
-                    <h3 class="text-xl font-semibold mb-2">C/C++</h3>
-                    <p class="text-secondary">了解C/C++编程语言，熟悉STL标准库，能写简单程序。</p>
-                </div>
-                <div class="bg-card rounded-xl p-6 card-hover" style="background: var(--bg-card);">
-                    <div class="text-primary text-3xl mb-4"><i class="fa fa-server" aria-hidden="true"></i></div>
-                    <h3 class="text-xl font-semibold mb-2">服务器运维</h3>
-                    <p class="text-secondary">了解Linux系统、Apache/Nginx配置、数据库管理等基础运维知识。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 项目展示 -->
-    <section id="projects" class="section-padding bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">项目展示</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <div class="rounded-xl overflow-hidden shadow-md card-hover">
-                    <img src="./dependency/StaticLibrary.png" alt="C++静态库项目截图" class="w-full h-48 object-cover" loading="lazy">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">C++静态库（持续更新）</h3>
-                        <p class="text-secondary mb-4">使用C++开发的静态库，有树、反调试、日志记录等功能。</p>
-                        <a href="https://github.com/ScriptForge666/Scriptforge" target="_blank" rel="noopener noreferrer" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1" aria-hidden="true"></i></a>
-                    </div>
-                </div>
-                <div class="rounded-xl overflow-hidden shadow-md card-hover">
-                    <img src="./dependency/HideWindow.png" alt="隐藏窗口项目截图" class="w-full h-48 object-cover" loading="lazy">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">C++&Qt&Win32API隐藏窗口</h3>
-                        <p class="text-secondary mb-4">使用C++&Qt&Win32API的隐藏窗口程序。</p>
-                        <a href="https://github.com/ScriptForge666/HideWindow" target="_blank" rel="noopener noreferrer" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1" aria-hidden="true"></i></a>
-                    </div>
-                </div>
-                <div class="rounded-xl overflow-hidden shadow-md card-hover">
-                    <img src="./dependency/Chess.png" alt="国际象棋项目截图" class="w-full h-48 object-cover" loading="lazy">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">C++国际象棋（已放弃）</h3>
-                        <p class="text-secondary mb-4">使用C++开发的国际象棋程序。</p>
-                        <a href="https://github.com/ScriptForge666/Chess" target="_blank" rel="noopener noreferrer" class="text-primary font-medium hover:underline">查看详情 <i class="fa fa-external-link ml-1" aria-hidden="true"></i></a>
+                    <div class="flex items-center gap-3">
+                        <i class="fa fa-map-marker text-xl" style="color: var(--bg-primary);"></i>
+                        <div>
+                            <div class="text-xs opacity-60">城市</div>
+                            <div class="font-medium">中国 · 苏州</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 联系我 -->
-    <section id="contact" class="section-padding bg-primary/5">
-        <div class="container mx-auto px-4">
-            <div class="mt-8 pt-8 border-t border-gray-200">
-                <h3 class="text-xl font-semibold mb-4">联系方式</h3>
+        <!-- 我的技能 -->
+        <section id="skills" class="py-12">
+            <h2>我的技能</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="card">
+                    <div class="text-3xl mb-3" style="color: var(--bg-primary);">
+                        <i class="fa fa-code"></i>
+                    </div>
+                    <h3>C / C++ 开发</h3>
+                    <p class="text-sm opacity-80">熟悉 C/C++ 语言特性，掌握 STL 标准库与数据结构，能够独立进行简单程序与静态库的架构和开发。</p>
+                </div>
+                <div class="card">
+                    <div class="text-3xl mb-3" style="color: var(--bg-primary);">
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <h3>服务器运维与 Linux</h3>
+                    <p class="text-sm opacity-80">了解 Linux 操作系统环境，熟悉 Nginx/Apache 部署配置、数据库基础运维等服务器技术。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 项目展示 -->
+        <section id="projects" class="py-12">
+            <h2>项目展示</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 项目 1 -->
+                <div class="card !p-0 flex flex-col justify-between overflow-hidden">
+                    <div>
+                        <img src="./dependency/StaticLibrary.png" alt="C++静态库项目截图" class="w-full h-44 object-cover project-card-img" loading="lazy">
+                        <div class="p-5">
+                            <h3>C++ 静态库 (持续更新)</h3>
+                            <p class="text-sm opacity-80 mb-4">使用 C++ 开发的实用通用静态库，内置树形结构、反调试、日志记录等模块。</p>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5">
+                        <a href="https://github.com/ScriptForge666/Scriptforge" target="_blank" rel="noopener" class="btn btn-secondary w-full">
+                            查看 GitHub 源码 <i class="fa fa-external-link text-xs ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目 2 -->
+                <div class="card !p-0 flex flex-col justify-between overflow-hidden">
+                    <div>
+                        <img src="./dependency/HideWindow.png" alt="隐藏窗口项目截图" class="w-full h-44 object-cover project-card-img" loading="lazy">
+                        <div class="p-5">
+                            <h3>C++ & Qt & Win32 隐藏窗口</h3>
+                            <p class="text-sm opacity-80 mb-4">结合 Win32 API 与 Qt 框架编写的窗口隐藏控制与后台管理实用工具。</p>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5">
+                        <a href="https://github.com/ScriptForge666/HideWindow" target="_blank" rel="noopener" class="btn btn-secondary w-full">
+                            查看 GitHub 源码 <i class="fa fa-external-link text-xs ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目 3 -->
+                <div class="card !p-0 flex flex-col justify-between overflow-hidden">
+                    <div>
+                        <img src="./dependency/Chess.png" alt="国际象棋项目截图" class="w-full h-44 object-cover project-card-img" loading="lazy">
+                        <div class="p-5">
+                            <h3>C++ 国际象棋逻辑</h3>
+                            <p class="text-sm opacity-80 mb-4">早期使用 C++ 尝试编写的国际象棋游戏及棋盘规则判定逻辑。</p>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5">
+                        <a href="https://github.com/ScriptForge666/Chess" target="_blank" rel="noopener" class="btn btn-secondary w-full">
+                            查看 GitHub 源码 <i class="fa fa-external-link text-xs ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系方式 -->
+        <section id="contact" class="py-12">
+            <h2>联系我</h2>
+            <div class="card p-6">
+                <p class="text-sm opacity-80 mb-4">欢迎交流技术问题，或探讨开源项目协作！</p>
                 <div class="flex flex-wrap gap-4">
-                    <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener noreferrer" class="flex items-center text-secondary hover:text-primary transition-colors"><i class="fa fa-github text-xl mr-2" aria-hidden="true"></i> GitHub</a>
-                    <div class="flex items-center text-secondary"><i class="fa fa-qq text-xl mr-2" aria-hidden="true"></i> QQ：3974142081</div>
+                    <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fa fa-github"></i> GitHub 主页
+                    </a>
+                    <button class="btn btn-secondary" onclick="copyQQ()">
+                        <i class="fa fa-qq"></i> QQ: 3974142081
+                    </button>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <!-- 页脚 -->
-    <footer class="bg-dark text-white py-8">
-        <div class="container mx-auto text-center">
-            <p class="mb-4">© 2026 Scriptforge</p>
-            <div class="flex justify-center space-x-6">
-                <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener noreferrer" class="hover:text-primary" aria-label="GitHub" title="GitHub"><i class="fa fa-github text-xl" aria-hidden="true"></i></a>
-                <i class="fa fa-qq text-xl" aria-hidden="true"></i>
+    <footer class="mt-12 py-8 text-center text-xs opacity-60 border-t border-black/5 dark:border-white/10">
+        <div class="page-wrapper space-y-2">
+            <p>© 2026 Scriptforge. All Rights Reserved.</p>
+            <div class="flex justify-center gap-4 text-base">
+                <a href="https://github.com/ScriptForge666" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa fa-github"></i></a>
+                <i class="fa fa-qq cursor-pointer" onclick="copyQQ()"></i>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- 页脚逻辑扩展逻辑 -->
     <script>
-        (function() {
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        document.addEventListener('DOMContentLoaded', () => {
+        // 1. 调用 ScriptForge 渐进式卡片显现逻辑
+        revealCardsSequentially(100);
 
-        // 仅在元素存在时绑定事件，避免未加载图标或在其它环境报错
-        if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', () => {
-        // 切换视觉隐藏类
-        const isHidden = mobileMenu.classList.contains('hidden');
-        if (isHidden) {
-        mobileMenu.classList.remove('hidden');
-        mobileMenu.setAttribute('aria-hidden', 'false');
-        menuBtn.setAttribute('aria-expanded', 'true');
-        // 切换图标
-        const icon = menuBtn.querySelector('i');
-        if (icon) {
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-        }
-        // 将焦点移到第一个菜单项，提升无障碍
-        const firstLink = mobileMenu.querySelector('a[role="menuitem"]');
-        if (firstLink) firstLink.focus();
-        } else {
-        mobileMenu.classList.add('hidden');
-        mobileMenu.setAttribute('aria-hidden', 'true');
-        menuBtn.setAttribute('aria-expanded', 'false');
-        const icon = menuBtn.querySelector('i');
-        if (icon) {
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-        }
-        // 返回焦点给按钮
-        menuBtn.focus();
+        // 2. 绑定主题切换 (Dark Mode Toggle)
+        const toggleBtn = document.getElementById('toggle-theme');
+        if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+        toggleBtn.classList.toggle('on');
+        document.body.classList.toggle('dark-mode');
+
+        const toast = document.getElementById('app-toast');
+        if (toast && toast.showToast) {
+        const isDark = document.body.classList.contains('dark-mode');
+        toast.showToast(isDark ? '已切换至暗色模式' : '已切换至亮色模式', 1500);
         }
         });
         }
 
-        // 平滑滚动（更稳健的实现）
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        // 如果锚点是单纯的 "#"，允许默认行为
-        if (!href || href === '#') return;
-        const targetId = href;
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-        e.preventDefault();
-        // 使用 scrollIntoView 更稳健，考虑固定头部偏移
-        const yOffset = 70; // 固定头部高度偏移
-        const y = targetElement.getBoundingClientRect().top + window.pageYOffset - yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-        // 隐藏移动菜单（若存在）
-        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-        mobileMenu.classList.add('hidden');
-        mobileMenu.setAttribute('aria-hidden', 'true');
-        }
-        // 确保菜单按钮图标与 aria 状态一致
-        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
-        const icon = menuBtn ? menuBtn.querySelector('i') : null;
-        if (icon) {
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-        }
+        // 3. 邮箱点击复制及 Toast 提示
+        const emailElem = document.getElementById('copy-email');
+        if (emailElem) {
+        emailElem.addEventListener('click', () => {
+        navigator.clipboard.writeText('scriptforge@outlook.com').then(() => {
+        const toast = document.getElementById('app-toast');
+        if (toast && toast.showToast) {
+        toast.showToast('邮箱已复制到剪贴板！');
         }
         });
         });
-        })();
+        }
+        });
+
+        // 复制 QQ 号逻辑
+        function copyQQ() {
+        navigator.clipboard.writeText('3974142081').then(() => {
+        const toast = document.getElementById('app-toast');
+        if (toast && toast.showToast) {
+        toast.showToast('QQ 号码已复制！');
+        }
+        });
+        }
     </script>
 </body>
 </html>
