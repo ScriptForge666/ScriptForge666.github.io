@@ -10,7 +10,8 @@ function escapeHtml(str) {
 
 
 const ALLOWED_ORIGINS = [
-  "https://script-forge.top"
+  "https://www.script-forge.top",
+  "https://fdd24529.scriptforge666-github-io.pages.dev"
 ];
 
 export async function onRequestPost(context) {
