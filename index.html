@@ -524,38 +524,38 @@
 
     // 处理 Cloudflare Pages / API 表单提交
     document.getElementById('contact-form')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const submitBtn = form.querySelector('button[type="submit"]');
-      
-      submitBtn.disabled = true;
+        e.preventDefault();
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
 
-      const data = {
-        name: document.getElementById('sender-name').value,
-        contact: document.getElementById('sender-contact').value,
-        subject: document.getElementById('msg-subject').value,
-        message: document.getElementById('msg-body').value
-      };
-
-      try {
-        const res = await fetch('/api/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-
-        if (res.ok) {
-          showToastNotification('消息已成功发送！');
-          form.reset();
-        } else {
-          throw new Error('API Response not ok');
+        submitBtn.disabled = true;
+        const data = {
+            name: document.getElementById('sender-name').value,
+            contact: document.getElementById('sender-contact').value,
+            subject: document.getElementById('msg-subject').value,
+            message: document.getElementById('msg-body').value
+        };
+        try {
+            const res = await fetch('/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (res.ok && result.success) {
+                showToastNotification('消息已成功发送！');
+                form.reset();
+            } else {
+                // 读取后端返回的错误信息展示给用户
+                showToastNotification(`提交失败：${result.error || '服务器异常'}`);
+            }
+        } catch (err) {
+            // 区分：网络/CORS错误，明确告诉用户失败，不要伪装成功
+            console.error('表单提交异常:', err);
+            showToastNotification('提交失败：网络异常或跨域访问被拒绝');
+        } finally {
+            submitBtn.disabled = false;
         }
-      } catch (err) {
-        showToastNotification('提交完成（若已配置后端服务将收到通知）');
-        form.reset();
-      } finally {
-        submitBtn.disabled = false;
-      }
     });
 
     // 页面加载完成后触发卡片渐次显现动画
