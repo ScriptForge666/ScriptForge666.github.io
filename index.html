@@ -522,18 +522,33 @@
       }
     }
 
+    async function getIp() {
+        try {
+            const res = await fetch("/api/ip");
+            const data = await res.json();
+            return data.ip;
+        } catch (err) {
+            console.error("获取 IP 地址失败:", err);
+            return "未知";
+        }
+    }
+
     // 处理 Cloudflare Pages / API 表单提交
     document.getElementById('contact-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const form = e.target;
         const submitBtn = form.querySelector('button[type="submit"]');
 
+        const ip = await getIp();
+
         submitBtn.disabled = true;
         const data = {
             name: document.getElementById('sender-name').value,
             contact: document.getElementById('sender-contact').value,
             subject: document.getElementById('msg-subject').value,
-            message: document.getElementById('msg-body').value
+            message: document.getElementById('msg-body').value,
+            ip: ip.ip,
+            country: ip.country
         };
         try {
             const res = await fetch('/api/submit', {
