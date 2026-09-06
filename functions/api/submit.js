@@ -1,3 +1,13 @@
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export async function onRequestPost(context) {
   try {
     // 1. 解析前端提交的数据
@@ -34,12 +44,12 @@ export async function onRequestPost(context) {
         subject: `[网站留言] ${subject || '来自个人主页的新消息'}`,
         html: `
           <h2>收到来自个人主页的新留言</h2>
-          <p><strong>发件人：</strong> ${name}</p>
-          <p><strong>联系方式：</strong> ${contact}</p>
-          <p><strong>主题：</strong> ${subject || '无'}</p>
+          <p><strong>发件人：</strong> ${escapeHtml(name)}</p>
+          <p><strong>联系方式：</strong> ${escapeHtml(contact)}</p>
+          <p><strong>主题：</strong> ${escapeHtml(subject) || '无'}</p>
           <hr />
           <p><strong>留言内容：</strong></p>
-          <p style="white-space: pre-wrap; background: #f4f4f4; padding: 12px; border-radius: 6px;">${message}</p>
+          <p style="white-space: pre-wrap; background: #f4f4f4; padding: 12px; border-radius: 6px;">${escapeHtml(message)}</p>
         `,
       }),
     });
