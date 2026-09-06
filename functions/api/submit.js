@@ -17,8 +17,7 @@ const ALLOWED_ORIGINS = [
 export async function onRequestPost(context) {
   try {
     const origin = context.request.headers.get("Origin");
-    // 如果存在Origin头，则校验来源；curl/postman不带Origin就跳过该校验
-    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+    if ((origin && !ALLOWED_ORIGINS.includes(origin)) || !origin) {
       return new Response(
         JSON.stringify({ success: false, error: "来源不允许访问" }),
         { status: 403, headers: { 'Content-Type': 'application/json' } }
