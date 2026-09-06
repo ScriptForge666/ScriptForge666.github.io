@@ -8,26 +8,44 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-
 const ALLOWED_ORIGINS = [
   "https://www.script-forge.top"
 ];
 
-export async function onRequestPost(context) {
-  try {
-    const origin = context.request.headers.get("Origin");
-    if ((origin && !ALLOWED_ORIGINS.includes(origin)) || !origin) {
-      return new Response(
-        JSON.stringify({ success: false, error: "来源不允许访问" }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-    const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : "";
+// 清洗origin：移除末尾斜杠
+function normalizeOrigin(o) {
+  if (!o) return null;
+  return o.replace(/\/+$/, '');
+}
 
-    // 1. 解析前端提交的数据
+function isOriginAllowed(rawOrigin) {
+  const o = normalizeOrigin(rawOrigin);
+  if (!o) return false;
+  return ALLOWED_ORIGINS.includes(o);
+}
+
+export async function onRequestPost(context) {
+  const rawOrigin = context.request.headers.get("Origin");
+  const allowed = isOriginAllowed(rawOrigin);
+
+  if (!allowed) {
+    return new Response(
+      JSON.stringify({ success: false, error: "来源不允许访问" }),
+      {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': ''
+        }
+      }
+    );
+  }
+  const allowOrigin = normalizeOrigin(rawOrigin);
+
+  try {
     const body = await context.request.json();
     const { name, contact, subject, message } = body;
-    // 2. 校验必填字段
+
     if (!name || !contact || !message) {
       return new Response(
         JSON.stringify({ success: false, error: '请填写必要信息' }),
@@ -35,7 +53,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 输入长度限制，防止超大报文
     if(name.length>100 || contact.length>200 || (subject&&subject.length>150) || message.length>2000){
       return new Response(
         JSON.stringify({ success: false, error: '输入内容超出长度限制' }),
@@ -43,7 +60,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 3. 从环境变量获取 Resend API Key
     const apiKey = context.env.RESEND_API_KEY;
     if (!apiKey) {
       return new Response(
@@ -51,7 +67,7 @@ export async function onRequestPost(context) {
         { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': allowOrigin } }
       );
     }
-    // 4. 调用 Resend API 发送邮件到你的 Outlook 邮箱
+
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -73,6 +89,7 @@ export async function onRequestPost(context) {
         `,
       }),
     });
+
     if (resendResponse.ok) {
       return new Response(
         JSON.stringify({ success: true, message: '邮件已成功发送！' }),
@@ -88,9 +105,8 @@ export async function onRequestPost(context) {
       const errorData = await resendResponse.json();
       throw new Error(errorData.message || '邮件发送失败');
     }
+
   } catch (err) {
-    const origin = context.request.headers.get("Origin");
-    const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : "";
     return new Response(
       JSON.stringify({ success: false, error: err.message }),
       { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': allowOrigin } }
@@ -98,10 +114,13 @@ export async function onRequestPost(context) {
   }
 }
 
-// 支持跨域 OPTIONS 预检请求
 export async function onRequestOptions(context) {
-  const origin = context.request.headers.get("Origin");
-  const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : "";
+  const rawOrigin = context.request.headers.get("Origin");
+  const allowed = isOriginAllowed(rawOrigin);
+  if (!allowed) {
+    return new Response(null, { status: 204, headers: {} });
+  }
+  const allowOrigin = normalizeOrigin(rawOrigin);
   return new Response(null, {
     status: 204,
     headers: {
