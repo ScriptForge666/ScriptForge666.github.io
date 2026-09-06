@@ -530,7 +530,16 @@
     } catch (err) {
         console.error("获取 IP 地址失败:", err);
         // 出错兜底，防止访问属性报错
-        return { ip:"未知", country:"未知" };
+        return { 
+            ip: "未知",
+            country: "未知",
+            continent: "未知",
+            region: "未知",
+            regionCode: 0,
+            city: "未知",
+            timezone: "未知",
+            asn: "未知"
+        };
     }
 }
 
@@ -549,7 +558,9 @@
             subject: document.getElementById('msg-subject').value,
             message: document.getElementById('msg-body').value,
             ip: ip.ip,
-            country: ip.country
+            country: ip.country,
+            region: ip.region,
+            city: ip.city
         };
         try {
             const res = await fetch('/api/submit', {

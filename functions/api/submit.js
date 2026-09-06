@@ -44,7 +44,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await context.request.json();
-    const { name, contact, subject, message, ip, country } = body;
+    const { name, contact, subject, message, ip, country, region, city } = body;
 
     if (!name || !contact || !message) {
       return new Response(
@@ -84,7 +84,7 @@ export async function onRequestPost(context) {
           <p><strong>联系方式：</strong> ${escapeHtml(contact)}</p>
           <p><strong>主题：</strong> ${escapeHtml(subject) || '无'}</p>
           <p><strong>IP地址：</strong> ${escapeHtml(ip) || '无'}</p>
-          <p><strong>地址：</strong> ${escapeHtml(country) || '无'}</p>
+          <p><strong>地址：</strong> ${escapeHtml("${country}, ${region}, ${city}") || '无'}</p>
           <hr />
           <p><strong>留言内容：</strong></p>
           <p style="white-space: pre-wrap; background: #f4f4f4; padding: 12px; border-radius: 6px;">${escapeHtml(message)}</p>
