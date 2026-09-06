@@ -61,7 +61,7 @@ export async function onRequestPost(context) {
           status: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Origin': 'https://script-forge.top',
           },
         }
       );
