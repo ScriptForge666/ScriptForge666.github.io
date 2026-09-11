@@ -46,6 +46,15 @@ export async function onRequestPost(context) {
     const body = await context.request.json();
     const { name, contact, subject, message, ip, country, region, city } = body;
 
+    const emailRegex = /^[a-zA-Z0-9_%+-]+(\.[a-zA-Z0-9_%+-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
+    if(!contact || !emailRegex.test(contact)) {
+      return new Response(
+        JSON.stringify({ success: false, error: '请输入有效的邮箱地址' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': allowOrigin } }
+      );
+    }
+
+
     if (!name || !contact || !message) {
       return new Response(
         JSON.stringify({ success: false, error: '请填写必要信息' }),
