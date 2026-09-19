@@ -4,11 +4,9 @@ function getCookie(name) {
     return k === name ? val : r;
   }, null);
 }
-const savedTheme = getCookie("scriptforge-web-theme");
-if(savedTheme === "dark") {
-  // ✅ 改成 html 根节点，head阶段就能访问
-  document.documentElement.classList.add("dark-mode");
-} else if(savedTheme === null) {
-  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if(systemDark) document.documentElement.classList.add("dark-mode");
+// 只读取，存到全局变量，head阶段不碰DOM
+window.__preferTheme = getCookie("scriptforge-web-theme");
+if(window.__preferTheme === null){
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  window.__preferTheme = sysDark ? "dark" : "light";
 }
