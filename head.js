@@ -4,7 +4,7 @@ function getCookie(name) {
     return k === name ? val : r;
   }, null);
 }
-const savedTheme = getCookie("my-web-theme");
+const savedTheme = getCookie("scriptforge-web-theme");
 if(savedTheme === "dark") {
   // ✅ 改成 html 根节点，head阶段就能访问
   document.documentElement.classList.add("dark-mode");

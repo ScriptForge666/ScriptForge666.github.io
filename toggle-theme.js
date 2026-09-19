@@ -17,6 +17,6 @@ if (toggleBtn) {
 
         const isDark = root.classList.contains('dark-mode');
         showToastNotification(isDark ? "已切换至深色模式" : "已切换至浅色模式");
-        document.cookie = `scriptforge-web-theme=${isDark ? 'dark' : 'light'}; path=/; max-age=31536000; SameSite=Lax`;
+        document.cookie = `scriptforge-web-theme=${isDark ? 'dark' : 'light'}; path=/; domain=.script-forge.top; max-age=31536000; SameSite=Lax; Secure`;
     });
 }
