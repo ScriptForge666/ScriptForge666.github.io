@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <script src="https://cdn.script-forge.top/head.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人介绍 | 我的个人主页</title>
@@ -10,18 +11,18 @@
     <meta property="og:title" content="ScriptForge 的个人主页">
     <meta property="og:description" content="C/C++ 开发者，展示项目、技能与联系方式。">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="./dependency/ScriptForge.png">
-    <link rel="icon" href="./dependency/ScriptForge.png" type="image/png">
+    <meta property="og:image" content="https://www.script-forge.top/dependency/ScriptForge.png">
+    <link rel="icon" href="https://www.script-forge.top/dependency/ScriptForge.png" type="image/png">
 
     <!-- 引入 Tailwind CSS CDN / 本地样式 -->
-    <link rel="stylesheet" href="./css/tailwind.min.css">
+    <link rel="stylesheet" href="https://www.script-forge.top/css/tailwind.min.css">
 
     <!-- 引入 Font-Awesome 图标库 -->
-    <link href="./fontawesome-free-7.3.1/css/all.min.css" rel="stylesheet">
+    <link href="https://www.script-forge.top/fontawesome-free-7.3.1/css/all.min.css" rel="stylesheet">
 
     <!-- 引入 ScriptForge 核心 CSS & JS 库 -->
     <link rel="stylesheet" href="https://cdn.script-forge.top/Scriptforge-css.css">
-    <script src="https://cdn.script-forge.top/Scriptforge-js.js" defer></script>
+    
 
     <style>
         .hero-section > div {
@@ -460,24 +461,15 @@
 
       </div>
     </section>
-
   </main>
 
   <!-- Footer -->
   <footer class="py-8 text-center text-xs text-gray-400 border-t border-gray-200 dark:border-zinc-800/80 mt-12">
     <p>© 2026 ScriptForge. Licensed under the Apache2.0 License.</p>
   </footer>
-
+  <script src="https://cdn.script-forge.top/Scriptforge-js.js"></script>
+  <script src="https://www.script-forge.top/toggle-theme.js"></script>
   <script>
-    // 切换主题逻辑
-    const toggleBtn = document.getElementById('toggle-theme');
-    toggleBtn?.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      toggleBtn.classList.toggle('on');
-      
-      const isDark = document.body.classList.contains('dark-mode');
-      showToastNotification(isDark ? "已切换至深色模式" : "已切换至浅色模式");
-    });
 
     // 复制 QQ 号
     function copyQQ() {
