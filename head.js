@@ -4,9 +4,11 @@ function getCookie(name) {
     return k === name ? val : r;
   }, null);
 }
-// 只读取，存到全局变量，head阶段不碰DOM
+// head阶段只做计算，不碰DOM
 window.__preferTheme = getCookie("scriptforge-web-theme");
 if(window.__preferTheme === null){
   const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   window.__preferTheme = sysDark ? "dark" : "light";
 }
+
+document.documentElement.dataset.theme = window.__preferTheme;
