@@ -14,6 +14,101 @@
     let stars = $(".stars");
     let star = $(".star");
     let isMoved = false;
+    const setTheme = (mode, emit = false) => {
+
+  const dark = mode === "dark";
+
+  if(dark){
+
+    mainButton.style.transform = "translateX(110em)";
+    mainButton.style.backgroundColor =
+        "rgba(195,200,210,1)";
+
+    mainButton.style.boxShadow =
+        "3em 3em 5em rgba(0,0,0,0.5)";
+
+    daytimeBackground[0].style.transform =
+        "translateX(110em)";
+
+    daytimeBackground[1].style.transform =
+        "translateX(80em)";
+
+    daytimeBackground[2].style.transform =
+        "translateX(50em)";
+
+
+    cloud.style.transform =
+        "translateY(80em)";
+
+    cloudLight.style.transform =
+        "translateY(80em)";
+
+
+    components.style.backgroundColor =
+        "rgba(25,30,50,1)";
+
+
+    moon.forEach(m=>{
+        m.style.opacity="1";
+    });
+
+
+    stars.style.transform =
+        "translateY(-62.5em)";
+
+    stars.style.opacity="1";
+
+
+    isMoved=true;
+
+
+  }else{
+
+
+    mainButton.style.transform =
+        "translateX(0)";
+
+    mainButton.style.backgroundColor =
+        "rgba(255,195,35,1)";
+
+
+    daytimeBackground.forEach(bg=>{
+        bg.style.transform="translateX(0)";
+    });
+
+
+    cloud.style.transform =
+        "translateY(10em)";
+
+    cloudLight.style.transform =
+        "translateY(10em)";
+
+
+    components.style.backgroundColor =
+        "rgba(70,133,192,1)";
+
+
+    moon.forEach(m=>{
+        m.style.opacity="0";
+    });
+
+
+    stars.style.transform =
+        "translateY(-125em)";
+
+    stars.style.opacity="0";
+
+
+    isMoved=false;
+
+  }
+
+
+  if(emit){
+      changeTheme(mode);
+  }
+
+};
     let isClicked = false;
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
       toggleThemeBasedOnSystem();
@@ -30,59 +125,13 @@
       }
     };
     components.onclick = () => {
-      if (isMoved) {
-        mainButton.style.transform = "translateX(0)";
-        mainButton.style.backgroundColor = "rgba(255, 195, 35,1)";
 
-        mainButton.style.boxShadow =
-          "3em 3em 5em rgba(0, 0, 0, 0.5), inset  -3em -5em 3em -3em rgba(0, 0, 0, 0.5), inset  4em 5em 2em -2em rgba(255, 230, 80,1)";
+    const next =
+        isMoved ? "light" : "dark";
 
-        daytimeBackground[0].style.transform = "translateX(0)";
-        daytimeBackground[1].style.transform = "translateX(0)";
-        daytimeBackground[2].style.transform = "translateX(0)";
-        cloud.style.transform = "translateY(10em)";
-        cloudLight.style.transform = "translateY(10em)";
-        components.style.backgroundColor = "rgba(70, 133, 192,1)";
+    setTheme(next,true);
 
-        moon[0].style.opacity = "0";
-        moon[1].style.opacity = "0";
-        moon[2].style.opacity = "0";
-
-        stars.style.transform = "translateY(-125em)";
-        stars.style.opacity = "0";
-
-        changeTheme("light");
-      } else {
-        mainButton.style.transform = "translateX(110em)";
-        mainButton.style.backgroundColor = "rgba(195, 200,210,1)";
-
-        mainButton.style.boxShadow =
-          "3em 3em 5em rgba(0, 0, 0, 0.5), inset  -3em -5em 3em -3em rgba(0, 0, 0, 0.5), inset  4em 5em 2em -2em rgba(255, 255, 210,1)";
-
-        daytimeBackground[0].style.transform = "translateX(110em)";
-        daytimeBackground[1].style.transform = "translateX(80em)";
-        daytimeBackground[2].style.transform = "translateX(50em)";
-        cloud.style.transform = "translateY(80em)";
-        cloudLight.style.transform = "translateY(80em)";
-        components.style.backgroundColor = "rgba(25,30,50,1)";
-
-        moon[0].style.opacity = "1";
-        moon[1].style.opacity = "1";
-        moon[2].style.opacity = "1";
-
-        stars.style.transform = "translateY(-62.5em)";
-        stars.style.opacity = "1";
-
-        changeTheme("dark");
-      }
-
-      isClicked = true;
-
-      setTimeout(function () {
-        isClicked = false;
-      }, 500);
-      isMoved = !isMoved;
-    };
+};
 
     mainButton.addEventListener("mousemove", function () {
       if (isClicked) return;
